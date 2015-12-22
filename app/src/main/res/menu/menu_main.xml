@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/menu_location"
+        android:title="位置"
+        android:icon="@drawable/location_icon"
+        app:showAsAction="always"/>
+
+    <item android:id="@+id/menu_language"
+        android:title="语言"
+        android:icon="@drawable/language_icon"
+        app:showAsAction="always"/>
+</menu>
