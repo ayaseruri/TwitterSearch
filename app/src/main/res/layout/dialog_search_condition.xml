@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:materialdesign="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/dialog_root"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="8dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:gravity="center_vertical"
+        android:layout_marginLeft="8dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="语言"
+            style="@style/Base.DialogWindowTitle.AppCompat"/>
+    </RelativeLayout>
+
+    <ayaseruri.x.twittersearch.view.SearchConditionItem_
+        android:id="@+id/lang_all"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        app:text="全部"
+        app:isCheck="true"/>
+
+    <ayaseruri.x.twittersearch.view.SearchConditionItem_
+        android:id="@+id/lang_en"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        app:text="英文"
+        app:isCheck="false"/>
+
+    <ayaseruri.x.twittersearch.view.SearchConditionItem_
+        android:id="@+id/lang_cn"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        app:text="中文"
+        app:isCheck="false"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:gravity="center_vertical"
+        android:layout_marginLeft="8dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="位置"
+            style="@style/Base.DialogWindowTitle.AppCompat"/>
+    </RelativeLayout>
+
+    <ayaseruri.x.twittersearch.view.SearchConditionItem_
+        android:id="@+id/loaction_all"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        app:text="全球"
+        app:isCheck="true"/>
+
+    <ayaseruri.x.twittersearch.view.SearchConditionItem_
+        android:id="@+id/loaction_near"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        app:text="附近"
+        app:isCheck="false"/>
+</LinearLayout>

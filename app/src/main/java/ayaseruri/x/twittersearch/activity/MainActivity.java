@@ -1,11 +1,21 @@
 package ayaseruri.x.twittersearch.activity;
 
+import android.app.Dialog;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.Toast;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
@@ -20,15 +30,19 @@ import org.androidannotations.annotations.sharedpreferences.Pref;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 
 import ayaseruri.x.twittersearch.R;
 import ayaseruri.x.twittersearch.adapter.SearchListAdaptar;
-import ayaseruri.x.twittersearch.global.Constant;
 import ayaseruri.x.twittersearch.db.BearerPrefs_;
-import ayaseruri.x.twittersearch.network.ApiService;
+import ayaseruri.x.twittersearch.global.Constant;
 import ayaseruri.x.twittersearch.network.RetrofitClient;
 import ayaseruri.x.twittersearch.objectholder.SearchResultInfo;
 import ayaseruri.x.twittersearch.objectholder.TokenInfo;
+import ayaseruri.x.twittersearch.util.LocalDisplay;
+import ayaseruri.x.twittersearch.view.SearchConditionItem;
+import ayaseruri.x.twittersearch.view.SearchConditionItem_;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -53,27 +67,24 @@ public class MainActivity extends AppCompatActivity {
 
     private SweetAlertDialog onGetBearerProgressDialog;
     private String bearer;
-    private ApiService mApiService;
+    private String lang, geocode;
 
     @AfterViews
     void init(){
         setSupportActionBar(mToolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
-        mApiService = RetrofitClient.getApiServiceInstance();
-
         initBearer();
 
         swipeRefresh.setColorSchemeColors(getResources().getIntArray(R.array.google_colors));
-
-        searchRecycler.setLayoutManager(new LinearLayoutManager(this));
-
-        mSearchView.setOnQueryChangeListener(new FloatingSearchView.OnQueryChangeListener() {
+        swipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
-            public void onSearchTextChanged(String oldQuery, final String newQuery) {
-
+            public void onRefresh() {
+                search(mSearchView.getQuery());
             }
         });
+
+        searchRecycler.setLayoutManager(new LinearLayoutManager(this));
 
         mSearchView.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
             @Override
@@ -84,27 +95,72 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSearchAction(String query) {
                 String searchKey = mSearchView.getQuery();
-                if(!"".equals(searchKey)){
+                if (!"".equals(searchKey)) {
                     search(searchKey);
-                }else {
+                } else {
                     YoYo.with(Techniques.Shake).playOn(mSearchView);
                 }
             }
         });
+
+        mSearchView.setOnMenuItemClickListener(new FloatingSearchView.OnMenuItemClickListener() {
+            @Override
+            public void onActionMenuItemSelected(MenuItem menuItem) {
+                switch (menuItem.getItemId()) {
+                    case R.id.menu_condition:
+                        creatConditionDialog();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+    }
+
+    private void creatConditionDialog(){
+        List<RadioButton> radioButtons = new ArrayList<>();
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        View contentView = layoutInflater.inflate(R.layout.dialog_search_condition, null);
+
+        Dialog dialog = new Dialog(this);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.setContentView(contentView
+                , new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        dialog.show();
+        WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
+        lp.width = LocalDisplay.SCREEN_WIDTH_PIXELS;
+        lp.gravity = Gravity.BOTTOM;
+        dialog.getWindow().setAttributes(lp);
+
+        LinearLayout contentRoot = (LinearLayout)contentView.findViewById(R.id.dialog_root);
+        for(int i = 0; i < contentRoot.getChildCount(); i++){
+            View tempView = contentRoot.getChildAt(i);
+            if(tempView instanceof SearchConditionItem_){
+                SearchConditionItem_ searchConditionItem = (SearchConditionItem_)tempView;
+                searchConditionItem.setItemClick(new SearchConditionItem.IOnSearchConditionItemClick() {
+                    @Override
+                    public void onItemClick() {
+
+                    }
+                });
+                radioButtons.add(searchConditionItem.getRadioButton());
+            }
+        }
     }
 
     private void search(String key){
         if(null == bearer || "".equals(bearer)){
             initBearer();
         }else {
-            RetrofitClient.authorStr = "Bearer " + bearer;
-            mApiService.getSearchResult(key)
+            RetrofitClient.apiService.getSearchResult("Bearer " + bearer, key, lang, geocode)
                     .subscribeOn(Schedulers.from(Constant.executor))
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(new Subscriber<SearchResultInfo>() {
                         @Override
                         public void onCompleted() {
-                            swipeRefresh.setRefreshing(false);
+                            if(swipeRefresh.isRefreshing()){
+                                swipeRefresh.setRefreshing(false);
+                            }
                         }
 
                         @Override
@@ -130,7 +186,9 @@ public class MainActivity extends AppCompatActivity {
 
                         @Override
                         public void onStart() {
-                            swipeRefresh.setRefreshing(true);
+                            if(!swipeRefresh.isRefreshing()){
+                                swipeRefresh.setRefreshing(true);
+                            }
                         }
                     });
         }
@@ -150,10 +208,9 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if(null != encodeApiKey && null != encodeApiSecret){
-                RetrofitClient.authorStr = "Basic "
-                        + Base64.encodeToString((encodeApiKey + ":" + encodeApiSecret).getBytes()
-                        , Base64.NO_WRAP);
-                mApiService.getTokenInfo(GRANT_TYPE)
+                RetrofitClient.apiService.getTokenInfo("Basic "
+                        + Base64.encodeToString((encodeApiKey + ":" + encodeApiSecret).getBytes(), Base64.NO_WRAP)
+                        , GRANT_TYPE)
                         .subscribeOn(Schedulers.from(Constant.executor))
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(new Subscriber<TokenInfo>() {

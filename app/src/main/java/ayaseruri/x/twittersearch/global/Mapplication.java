@@ -6,6 +6,8 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 
 import org.androidannotations.annotations.EApplication;
 
+import ayaseruri.x.twittersearch.util.LocalDisplay;
+
 /**
  * Created by ayaseruri on 15/12/23.
  */
@@ -16,5 +18,6 @@ public class Mapplication extends Application {
     public void onCreate() {
         super.onCreate();
         Fresco.initialize(this);
+        LocalDisplay.init(this);
     }
 }

@@ -1167,7 +1167,7 @@ public class SearchResultInfo {
             }
 
             public static class UserEntity {
-                private int id;
+                private long id;
                 private String id_str;
                 private String name;
                 private String screen_name;
@@ -1379,7 +1379,7 @@ public class SearchResultInfo {
                     this.notifications = notifications;
                 }
 
-                public int getId() {
+                public long getId() {
                     return id;
                 }
 
@@ -1724,7 +1724,7 @@ public class SearchResultInfo {
             public static class UserMentionsEntity {
                 private String screen_name;
                 private String name;
-                private int id;
+                private long id;
                 private String id_str;
                 private List<Integer> indices;
 
@@ -1736,7 +1736,7 @@ public class SearchResultInfo {
                     this.name = name;
                 }
 
-                public void setId(int id) {
+                public void setId(long id) {
                     this.id = id;
                 }
 
@@ -1756,7 +1756,7 @@ public class SearchResultInfo {
                     return name;
                 }
 
-                public int getId() {
+                public long getId() {
                     return id;
                 }
 

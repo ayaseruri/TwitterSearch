@@ -37,12 +37,16 @@ public class SearchListAdaptar extends RecyclerView.Adapter<SearchListAdaptar.Vi
     public void onBindViewHolder(ViewHolder holder, final int position) {
         SimpleDraweeView userAvatar = (SimpleDraweeView)holder.itemView.findViewById(R.id.user_avatar);
         TextView content = (TextView)holder.itemView.findViewById(R.id.content);
+        TextView userName = (TextView)holder.itemView.findViewById(R.id.user_name);
+        TextView userNick = (TextView)holder.itemView.findViewById(R.id.user_nick);
 
         final SearchResultInfo.StatusesEntity statusesEntity = searchResultInfo.getStatuses().get(position);
         String avatarUrl = statusesEntity.getUser().getProfile_image_url();
         if(null != avatarUrl){
             userAvatar.setImageURI(Uri.parse(avatarUrl));
         }
+        userName.setText(statusesEntity.getUser().getName());
+        userNick.setText("@" + statusesEntity.getUser().getScreen_name());
         content.setText(statusesEntity.getText());
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
