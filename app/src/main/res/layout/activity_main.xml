@@ -6,13 +6,28 @@
     android:layout_height="match_parent"
     tools:context=".activity.MainActivity">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:minHeight="?attr/actionBarSize"
-        android:background="@color/colorPrimary"
-        app:contentInsetStart="0dp" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="?attr/actionBarSize"
+            android:background="@color/colorPrimary"
+            app:contentInsetStart="0dp" />
+
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swipe_refresh"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/search_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </android.support.v4.widget.SwipeRefreshLayout>
+    </LinearLayout>
 
     <com.arlib.floatingsearchview.FloatingSearchView
         android:id="@+id/search_view"
@@ -20,10 +35,11 @@
         android:layout_height="match_parent"
         app:floatingSearch_searchBarMarginLeft="8dp"
         app:floatingSearch_searchBarMarginRight="8dp"
-        app:floatingSearch_searchHint="推特搜索"
+        app:floatingSearch_searchHint="推特搜索…"
         app:floatingSearch_showSearchKey="true"
         app:floatingSearch_dismissOnOutsideTouch="true"
         app:floatingSearch_leftActionMode="showHamburger"
-        app:floatingSearch_menu="@menu/menu_main"/>
+        app:floatingSearch_menu="@menu/menu_main"
+        app:floatingSearch_setQueryAsTitle="true"/>
 
 </merge>

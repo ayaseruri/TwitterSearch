@@ -1,4 +1,4 @@
-package ayaseruri.x.twittersearch.constant;
+package ayaseruri.x.twittersearch.global;
 
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
