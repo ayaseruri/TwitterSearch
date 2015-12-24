@@ -6,6 +6,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
 
@@ -38,6 +39,7 @@ import rx.schedulers.Schedulers;
 
 @EActivity(R.layout.activity_main)
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "debug";
     private static final String GRANT_TYPE = "client_credentials";
     private static final String TOKEN_TYPE = "bearer";
 
@@ -116,6 +118,11 @@ public class MainActivity extends AppCompatActivity {
         if(null == bearer || "".equals(bearer)){
             initBearer();
         }else if(!"".equals(key)){
+            lang = searchParamsPrefs_.lang().get();
+            Log.d(TAG, "lang = " + lang);
+            geocode = searchParamsPrefs_.location().get();
+            Log.d(TAG, "geocode = " + geocode);
+
             RetrofitClient.apiService.getSearchResult("Bearer " + bearer, key, lang, geocode)
                     .subscribeOn(Schedulers.from(Constant.executor))
                     .observeOn(AndroidSchedulers.mainThread())
@@ -150,11 +157,10 @@ public class MainActivity extends AppCompatActivity {
 
                         @Override
                         public void onStart() {
-                            lang = searchParamsPrefs_.lang().get();
-                            geocode = searchParamsPrefs_.location().get();
                             if(!swipeRefresh.isRefreshing()){
                                 swipeRefresh.setRefreshing(true);
                             }
+                            searchRecycler.setAdapter(null);
                         }
                     });
         }

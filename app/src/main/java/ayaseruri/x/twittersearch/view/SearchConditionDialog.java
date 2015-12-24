@@ -94,7 +94,7 @@ public class SearchConditionDialog extends Dialog {
                     }else {
                         textView.setText(textView.getText() + "(正在定位…)");
                     }
-                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10, new LocationListener() {
+                    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, new LocationListener() {
                         @Override
                         public void onLocationChanged(Location location) {
                             currentItem.setClickable(true);
