@@ -4,6 +4,8 @@ a twitter search api demo that use material design
 # Demo
 [Apk Download](https://github.com/ayaseruri/TwitterSearch/blob/master/demo/app-debug.apk)
 
+(please wait while the screen.gif a litte big)
+
 ![screen.gif](https://github.com/ayaseruri/TwitterSearch/blob/master/demo/screen.gif)
 
 # Proudly use libs below:
