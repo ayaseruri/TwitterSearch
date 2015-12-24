@@ -2,7 +2,9 @@ package ayaseruri.x.twittersearch.view;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.RadioButton;
@@ -27,8 +29,10 @@ public class SearchConditionItem extends RelativeLayout {
     TextView textView;
 
     private String text = "";
-    private boolean isCheck = false;
+    private boolean isCheck;
+    private boolean clickable = true;
     private IOnSearchConditionItemClick mIOnItemClick;
+    private CompoundButton.OnCheckedChangeListener mOnCheckedChangeListener;
 
     public SearchConditionItem(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -46,33 +50,41 @@ public class SearchConditionItem extends RelativeLayout {
         this.setBackgroundResource(R.drawable.item_ripple);
         textView.setText(text);
         radioButton.setChecked(isCheck);
+        radioButton.setEnabled(false);
 
         this.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                radioButton.setChecked(!radioButton.isChecked());
+                radioButton.setChecked(true);
                 if (null != mIOnItemClick) {
-                    mIOnItemClick.onItemClick();
-                }
-            }
-        });
-
-        radioButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if(null != mIOnItemClick){
-                    mIOnItemClick.onItemClick();
+                    mIOnItemClick.onItemClick(SearchConditionItem.this);
                 }
             }
         });
     }
 
-    public RadioButton getRadioButton() {
-        return radioButton;
+    @Override
+    public boolean onInterceptTouchEvent(MotionEvent ev) {
+        return true;
     }
 
     public TextView getTextView() {
         return textView;
+    }
+
+    public void setClickable(boolean isClickable){
+        this.clickable = isClickable;
+        super.setClickable(clickable);
+        String colorStr = "#616161";
+        if(!isClickable){
+            colorStr = "#BDBDBD";
+        }
+        textView.setTextColor(Color.parseColor(colorStr));
+        setChecked(isCheck);
+    }
+
+    public boolean getIsClickable() {
+        return clickable;
     }
 
     public void setItemClick(IOnSearchConditionItemClick itemClick){
@@ -80,6 +92,19 @@ public class SearchConditionItem extends RelativeLayout {
     }
 
     public interface IOnSearchConditionItemClick{
-        void onItemClick();
+        void onItemClick(SearchConditionItem searchConditionItem);
+    }
+
+    public void setOnCheckedChangeListener(CompoundButton.OnCheckedChangeListener l){
+        mOnCheckedChangeListener = l;
+        radioButton.setOnCheckedChangeListener(l);
+    }
+
+    public void setChecked(boolean check){
+        radioButton.setOnCheckedChangeListener(null);
+        radioButton.setChecked(check);
+        if(null != mOnCheckedChangeListener){
+            radioButton.setOnCheckedChangeListener(mOnCheckedChangeListener);
+        }
     }
 }

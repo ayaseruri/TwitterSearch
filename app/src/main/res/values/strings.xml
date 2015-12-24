@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">TwitterSearch</string>
+    <string name="near" formatted="false">附近(%.2f,%.2f)</string>
 </resources>

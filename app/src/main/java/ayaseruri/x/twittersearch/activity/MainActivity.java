@@ -1,21 +1,12 @@
 package ayaseruri.x.twittersearch.activity;
 
-import android.app.Dialog;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Base64;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.LinearLayout;
-import android.widget.RadioButton;
 import android.widget.Toast;
 
 import com.arlib.floatingsearchview.FloatingSearchView;
@@ -30,19 +21,16 @@ import org.androidannotations.annotations.sharedpreferences.Pref;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
 
 import ayaseruri.x.twittersearch.R;
 import ayaseruri.x.twittersearch.adapter.SearchListAdaptar;
 import ayaseruri.x.twittersearch.db.BearerPrefs_;
+import ayaseruri.x.twittersearch.db.SearchParamsPrefs_;
 import ayaseruri.x.twittersearch.global.Constant;
 import ayaseruri.x.twittersearch.network.RetrofitClient;
 import ayaseruri.x.twittersearch.objectholder.SearchResultInfo;
 import ayaseruri.x.twittersearch.objectholder.TokenInfo;
-import ayaseruri.x.twittersearch.util.LocalDisplay;
-import ayaseruri.x.twittersearch.view.SearchConditionItem;
-import ayaseruri.x.twittersearch.view.SearchConditionItem_;
+import ayaseruri.x.twittersearch.view.SearchConditionDialog;
 import cn.pedant.SweetAlert.SweetAlertDialog;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
@@ -64,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Pref
     BearerPrefs_ bearerPrefs_;
+    @Pref
+    SearchParamsPrefs_ searchParamsPrefs_;
 
     private SweetAlertDialog onGetBearerProgressDialog;
     private String bearer;
@@ -108,7 +98,12 @@ public class MainActivity extends AppCompatActivity {
             public void onActionMenuItemSelected(MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
                     case R.id.menu_condition:
-                        creatConditionDialog();
+                        new SearchConditionDialog(MainActivity.this, new SearchConditionDialog.IOnSCDialogItemClick() {
+                            @Override
+                            public void onItemClick() {
+                                search(mSearchView.getQuery());
+                            }
+                        }).show();
                         break;
                     default:
                         break;
@@ -117,41 +112,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void creatConditionDialog(){
-        List<RadioButton> radioButtons = new ArrayList<>();
-        LayoutInflater layoutInflater = LayoutInflater.from(this);
-        View contentView = layoutInflater.inflate(R.layout.dialog_search_condition, null);
-
-        Dialog dialog = new Dialog(this);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(contentView
-                , new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        dialog.show();
-        WindowManager.LayoutParams lp = dialog.getWindow().getAttributes();
-        lp.width = LocalDisplay.SCREEN_WIDTH_PIXELS;
-        lp.gravity = Gravity.BOTTOM;
-        dialog.getWindow().setAttributes(lp);
-
-        LinearLayout contentRoot = (LinearLayout)contentView.findViewById(R.id.dialog_root);
-        for(int i = 0; i < contentRoot.getChildCount(); i++){
-            View tempView = contentRoot.getChildAt(i);
-            if(tempView instanceof SearchConditionItem_){
-                SearchConditionItem_ searchConditionItem = (SearchConditionItem_)tempView;
-                searchConditionItem.setItemClick(new SearchConditionItem.IOnSearchConditionItemClick() {
-                    @Override
-                    public void onItemClick() {
-
-                    }
-                });
-                radioButtons.add(searchConditionItem.getRadioButton());
-            }
-        }
-    }
-
     private void search(String key){
         if(null == bearer || "".equals(bearer)){
             initBearer();
-        }else {
+        }else if(!"".equals(key)){
             RetrofitClient.apiService.getSearchResult("Bearer " + bearer, key, lang, geocode)
                     .subscribeOn(Schedulers.from(Constant.executor))
                     .observeOn(AndroidSchedulers.mainThread())
@@ -186,6 +150,8 @@ public class MainActivity extends AppCompatActivity {
 
                         @Override
                         public void onStart() {
+                            lang = searchParamsPrefs_.lang().get();
+                            geocode = searchParamsPrefs_.location().get();
                             if(!swipeRefresh.isRefreshing()){
                                 swipeRefresh.setRefreshing(true);
                             }

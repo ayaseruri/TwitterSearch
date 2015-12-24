@@ -26,7 +26,7 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         app:text="全部"
-        app:isCheck="true"/>
+        app:isCheck="false"/>
 
     <ayaseruri.x.twittersearch.view.SearchConditionItem_
         android:id="@+id/lang_en"
@@ -59,7 +59,7 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         app:text="全球"
-        app:isCheck="true"/>
+        app:isCheck="false"/>
 
     <ayaseruri.x.twittersearch.view.SearchConditionItem_
         android:id="@+id/loaction_near"

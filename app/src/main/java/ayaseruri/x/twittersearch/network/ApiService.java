@@ -21,7 +21,7 @@ public interface ApiService {
     Observable<TokenInfo> getTokenInfo(@Header("Authorization") String authorHeader
             , @Field("grant_type") String grantType);
 
-    @GET("1.1/search/tweets.json")
+    @GET("1.1/search/tweets.json?result_type=recent")
     Observable<SearchResultInfo> getSearchResult(@Header("Authorization") String authorHeader
             , @Query("q")String key, @Query("lang")String lang, @Query("geocode") String geocode);
 }

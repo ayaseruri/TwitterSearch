@@ -8,7 +8,8 @@
         android:layout_height="wrap_content"
         android:text="附近"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="8dp"/>
+        android:layout_marginLeft="8dp"
+        android:textColor="#616161"/>
     <RadioButton
         android:id="@+id/search_condition_rb"
         android:layout_width="28dp"
